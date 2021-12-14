@@ -1,4 +1,4 @@
-package com.hc.rpc.server;
+package com.hc.rpc;
 
 import com.hc.rpc.entity.RpcRequest;
 import com.hc.rpc.entity.RpcResponse;
@@ -35,3 +35,5 @@ public class RequestHandler {
         return method.invoke(service,rpcRequest.getParameters());
     }
 }
+
+

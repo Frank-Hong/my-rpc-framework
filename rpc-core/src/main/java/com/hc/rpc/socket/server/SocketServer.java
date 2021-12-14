@@ -1,5 +1,7 @@
-package com.hc.rpc.server;
+package com.hc.rpc.socket.server;
 
+import com.hc.rpc.RequestHandler;
+import com.hc.rpc.RpcServer;
 import com.hc.rpc.registry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,16 +11,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
 
-public class RpcServer {
+public class SocketServer implements RpcServer {
     private final ExecutorService threadPool;
 
-    private static final Logger logger= LoggerFactory.getLogger(RpcServer.class);
+    private static final Logger logger= LoggerFactory.getLogger(SocketServer.class);
 
     private final ServiceRegistry serviceRegistry;
 
     private RequestHandler requestHandler=new RequestHandler();
 
-    public RpcServer(ServiceRegistry serviceRegistry){
+    public SocketServer(ServiceRegistry serviceRegistry){
         int corePoolSize=5;
         int maximumPoolSize=50;
         long keepAliveTime=60;
