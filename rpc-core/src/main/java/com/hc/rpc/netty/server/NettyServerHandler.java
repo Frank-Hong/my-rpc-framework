@@ -16,13 +16,10 @@ import org.slf4j.LoggerFactory;
 
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
     private static final Logger logger= LoggerFactory.getLogger(NettyServerHandler.class);
-    private static RequestHandler requestHandler;//=new RequestHandler();
-    private static ServiceRegistry serviceRegistry;//= new DefaultServiceRegistry();
+    private static RequestHandler requestHandler=new RequestHandler();
+    private static ServiceRegistry serviceRegistry= new DefaultServiceRegistry();
 
-    static {
-        requestHandler = new RequestHandler();
-        serviceRegistry = new DefaultServiceRegistry();
-    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequest rpcRequest) throws Exception {
         try {

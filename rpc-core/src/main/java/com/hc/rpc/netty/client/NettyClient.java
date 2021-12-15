@@ -6,6 +6,7 @@ import com.hc.rpc.codec.CommonEncoder;
 import com.hc.rpc.entity.RpcRequest;
 import com.hc.rpc.entity.RpcResponse;
 import com.hc.rpc.serializer.JsonSerializer;
+import com.hc.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -21,9 +22,8 @@ public class NettyClient implements RpcClient {
 
     private String host;
     private int port;
-    //private static EventLoopGroup group=new NioEventLoopGroup();
-    private static final Bootstrap bootstrap;
-    /*=new Bootstrap()
+    private static EventLoopGroup group=new NioEventLoopGroup();
+    private static final Bootstrap bootstrap=new Bootstrap()
             .group(group)
             .channel(NioSocketChannel.class)
             .option(ChannelOption.SO_KEEPALIVE,true)
@@ -36,24 +36,8 @@ public class NettyClient implements RpcClient {
                             .addLast(new NettyClientHandler());
                 }
             });
-*/
 
-    static {
-        EventLoopGroup group = new NioEventLoopGroup();
-        bootstrap = new Bootstrap();
-        bootstrap.group(group)
-                .channel(NioSocketChannel.class)
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
-                        ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(new CommonDecoder())
-                                .addLast(new CommonEncoder(new JsonSerializer()))
-                                .addLast(new NettyClientHandler());
-                    }
-                });
-    }
+
     public NettyClient(String host, int port) {
         this.host = host;
         this.port = port;

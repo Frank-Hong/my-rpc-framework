@@ -12,8 +12,12 @@ public interface CommonSerializer {
     //根据编号得到序列化器
     static CommonSerializer getByCode(int code){
         switch (code){
-            case 1:return new JsonSerializer();
-            default:return null;
+            case 0:
+                return new KryoSerializer();
+            case 1:
+                return new JsonSerializer();
+            default:
+                return null;
         }
     }
 
