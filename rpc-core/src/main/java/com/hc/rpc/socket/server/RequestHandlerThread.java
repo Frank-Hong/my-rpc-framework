@@ -3,7 +3,7 @@ package com.hc.rpc.socket.server;
 import com.hc.rpc.RequestHandler;
 import com.hc.rpc.entity.RpcRequest;
 import com.hc.rpc.entity.RpcResponse;
-import com.hc.rpc.registry.ServiceRegistry;
+import com.hc.rpc.provider.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +19,11 @@ public class RequestHandlerThread implements Runnable{
 
     private RequestHandler requestHandler=new RequestHandler();
 
-    private ServiceRegistry serviceRegistry;
+    private ServiceProvider serviceRegistry;
 
     private Socket socket;//由于需要和客户端打交道，所以需要socket对象
 
-    public RequestHandlerThread(RequestHandler requestHandler, ServiceRegistry serviceRegistry, Socket socket) {
+    public RequestHandlerThread(RequestHandler requestHandler, ServiceProvider serviceRegistry, Socket socket) {
         this.requestHandler = requestHandler;
         this.serviceRegistry = serviceRegistry;
         this.socket = socket;

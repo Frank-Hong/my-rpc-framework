@@ -1,16 +1,17 @@
-package com.hc.rpc.registry;
+package com.hc.rpc.provider;
 
 import com.hc.rpc.enumeration.RpcError;
 import com.hc.rpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.spi.ServiceRegistry;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultServiceRegistry implements ServiceRegistry{
-    private  static final Logger logger=LoggerFactory.getLogger(DefaultServiceRegistry.class);
+public class DefaultServiceProvider implements ServiceProvider {
+    private static final Logger logger=LoggerFactory.getLogger(DefaultServiceProvider.class);
 
     private static final Map<String,Object> serviceMap=new ConcurrentHashMap<>();
 

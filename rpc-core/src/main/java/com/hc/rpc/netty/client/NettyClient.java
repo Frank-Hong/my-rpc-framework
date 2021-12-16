@@ -5,8 +5,9 @@ import com.hc.rpc.codec.CommonDecoder;
 import com.hc.rpc.codec.CommonEncoder;
 import com.hc.rpc.entity.RpcRequest;
 import com.hc.rpc.entity.RpcResponse;
-import com.hc.rpc.serializer.JsonSerializer;
-import com.hc.rpc.serializer.KryoSerializer;
+import com.hc.rpc.enumeration.RpcError;
+import com.hc.rpc.exception.RpcException;
+import com.hc.rpc.serializer.CommonSerializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -23,6 +24,7 @@ public class NettyClient implements RpcClient {
     private String host;
     private int port;
     private static EventLoopGroup group=new NioEventLoopGroup();
+    private static CommonSerializer serializer;
     private static final Bootstrap bootstrap=new Bootstrap()
             .group(group)
             .channel(NioSocketChannel.class)
@@ -32,7 +34,7 @@ public class NettyClient implements RpcClient {
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ChannelPipeline pipeline = ch.pipeline();
                     pipeline.addLast(new CommonDecoder())
-                            .addLast(new CommonEncoder(new JsonSerializer()))
+                            .addLast(new CommonEncoder(serializer))
                             .addLast(new NettyClientHandler());
                 }
             });
@@ -45,6 +47,11 @@ public class NettyClient implements RpcClient {
 
     @Override
     public Object sendRequest(RpcRequest rpcRequest) {
+        if(serializer==null){
+            logger.error("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
+
         try {
             ChannelFuture future = bootstrap.connect(host, port).sync();
             logger.info("客户端连接到服务器{}:{}",host,port);
@@ -67,6 +74,11 @@ public class NettyClient implements RpcClient {
             logger.error("发送消息时有错误发生：",e);
         }
         return null;
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer=serializer;
     }
 }
 

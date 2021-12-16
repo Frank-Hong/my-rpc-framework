@@ -6,6 +6,7 @@ import com.hc.rpc.entity.RpcResponse;
 import com.hc.rpc.enumeration.ResponseCode;
 import com.hc.rpc.enumeration.RpcError;
 import com.hc.rpc.exception.RpcException;
+import com.hc.rpc.serializer.CommonSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,7 @@ public class SocketClient implements RpcClient {
 
     private final String host;
     private final int port;
+    private CommonSerializer serializer;
 
     public SocketClient(String host, int port) {
         this.host = host;
@@ -46,5 +48,10 @@ public class SocketClient implements RpcClient {
             logger.error("调用时有错误发生：",e);
             throw new RpcException("服务调用失败: ", e);
         }
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer=serializer;
     }
 }
