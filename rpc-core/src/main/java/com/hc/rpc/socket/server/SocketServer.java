@@ -1,7 +1,9 @@
 package com.hc.rpc.socket.server;
 
+import com.hc.rpc.AbstractRpcServer;
 import com.hc.rpc.RequestHandler;
 import com.hc.rpc.RpcServer;
+import com.hc.rpc.factory.ThreadPoolFactory;
 import com.hc.rpc.provider.DefaultServiceProvider;
 import com.hc.rpc.provider.ServiceProvider;
 import com.hc.rpc.registry.NacosServiceRegistry;
@@ -15,15 +17,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
 
-public class SocketServer implements RpcServer {
+public class SocketServer extends AbstractRpcServer {
     private final ExecutorService threadPool;
 
     private static final Logger logger= LoggerFactory.getLogger(SocketServer.class);
 
-    private final String host;
-    private final int port;
-    private final ServiceProvider serviceProvider=new DefaultServiceProvider();
-    private final ServiceRegistry serviceRegistry=new NacosServiceRegistry();
     private RequestHandler requestHandler=new RequestHandler();
     private CommonSerializer serializer;
 
@@ -31,13 +29,10 @@ public class SocketServer implements RpcServer {
     public SocketServer(String host, int port){
         this.host = host;
         this.port = port;
-        int corePoolSize=5;
-        int maximumPoolSize=50;
-        long keepAliveTime=60;
-        BlockingQueue<Runnable> workingQueue=new ArrayBlockingQueue<>(100);
-        ThreadFactory threadFactory= Executors.defaultThreadFactory();
-        threadPool=new ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime,TimeUnit.SECONDS,workingQueue,threadFactory);
-        start();
+        serviceRegistry = new NacosServiceRegistry();
+        serviceProvider = new DefaultServiceProvider();
+        threadPool= ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
+        scanService();
     }
 
     //start之后serviceProvider里的服务均可调用
@@ -55,11 +50,6 @@ public class SocketServer implements RpcServer {
         }catch (IOException e){
             logger.error("连接错误：",e);
         }
-    }
-
-    @Override
-    public <T> void publishService(Object service, Class<T> serviceClass) {
-        serviceProvider.register(service);
     }
 
     @Override

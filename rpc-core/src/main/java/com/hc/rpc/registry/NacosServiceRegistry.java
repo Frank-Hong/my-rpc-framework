@@ -6,6 +6,7 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.hc.rpc.enumeration.RpcError;
 import com.hc.rpc.exception.RpcException;
+import com.hc.rpc.utls.NacosUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,17 +41,5 @@ public class NacosServiceRegistry implements ServiceRegistry{
         }
     }
 
-    @Override
-    public InetSocketAddress lookupService(String serviceName) {
-        try{
-            //获取能提供目标服务的所有主机
-            List<Instance> instances=namingService.getAllInstances(serviceName);
-            //目前没有实现负载均衡，固定选第一台主机
-            Instance instance=instances.get(0);
-            return new InetSocketAddress(instance.getIp(),instance.getPort());
-        }catch (NacosException e){
-            logger.error("获取服务时有错误发生：",e);
-        }
-        return null;
-    }
+
 }

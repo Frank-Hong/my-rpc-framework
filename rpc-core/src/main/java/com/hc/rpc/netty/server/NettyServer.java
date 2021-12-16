@@ -1,10 +1,12 @@
 package com.hc.rpc.netty.server;
 
+import com.hc.rpc.AbstractRpcServer;
 import com.hc.rpc.RpcServer;
 import com.hc.rpc.codec.CommonDecoder;
 import com.hc.rpc.codec.CommonEncoder;
 import com.hc.rpc.enumeration.RpcError;
 import com.hc.rpc.exception.RpcException;
+import com.hc.rpc.hook.ShutdownHook;
 import com.hc.rpc.provider.DefaultServiceProvider;
 import com.hc.rpc.provider.ServiceProvider;
 import com.hc.rpc.registry.NacosServiceRegistry;
@@ -25,23 +27,24 @@ import io.netty.channel.nio.NioEventLoopGroup;
 
 import java.net.InetSocketAddress;
 
-public class NettyServer implements RpcServer {
+public class NettyServer extends AbstractRpcServer {
     private static final Logger logger= LoggerFactory.getLogger(NettyServer.class);
 
-    private final int port;
-    private final String host;
     private CommonSerializer serializer;
 
-    private final ServiceRegistry serviceRegistry=new NacosServiceRegistry();
-    private final ServiceProvider serviceProvider=new DefaultServiceProvider();
+
 
     public NettyServer(String host, int port) {
         this.port = port;
         this.host = host;
+        serviceRegistry = new NacosServiceRegistry();
+        serviceProvider = new DefaultServiceProvider();
+        scanService();
     }
 
     @Override
     public void start() {
+        ShutdownHook.getShutdownHook().addClearAllHook();
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
         try{
@@ -73,16 +76,6 @@ public class NettyServer implements RpcServer {
 
     }
 
-    @Override
-    public <T> void publishService(Object service, Class<T> serviceClass) {
-        if(serializer==null){
-            logger.error("未设置序列化器");
-            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
-        }
-        serviceProvider.register(service);
-        serviceRegistry.register(serviceClass.getCanonicalName(),new InetSocketAddress(host,port));
-        start();
-    }
 
     @Override
     public void setSerializer(CommonSerializer serializer) {
